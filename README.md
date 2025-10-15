@@ -1,20 +1,26 @@
-# plane-lang-lingpar
+# PlaneLang — Linguagem de Missões de Voo
 ```ebnf
 (* Programa principal *)
 program         = { statement } ;
 
 (* Declarações e instruções *)
-statement       = variable_declaration
-                | assignment
+statement       = takeoff_stmt
+                | land_stmt
+                | set_stmt
+                | goto_stmt
+                | wait_stmt
+                | print_stmt
                 | conditional
                 | loop
-                | function_call
-                | print_statement
                 | ";" ;
 
-(* Variáveis *)
-variable_declaration = "var" identifier "=" expression ";" ;
-assignment           = identifier "=" expression ";" ;
+(* Comandos básicos de voo *)
+takeoff_stmt    = "takeoff" ";" ;
+land_stmt       = "land" ";" ;
+set_stmt        = "set" parameter "=" value ";" ;
+goto_stmt       = "goto" identifier ";" ;
+wait_stmt       = "wait" number "seconds" ";" ;
+print_stmt      = "print" string ";" ;
 
 (* Condicional *)
 conditional     = "if" "(" condition ")" "{" { statement } "}"
@@ -24,26 +30,12 @@ conditional     = "if" "(" condition ")" "{" { statement } "}"
 loop            = "while" "(" condition ")" "{" { statement } "}" ;
 
 (* Expressões e condições *)
-expression      = number
-                | string
-                | identifier
-                | expression operator expression
-                | function_call ;
-
-condition       = expression comparator expression ;
-
-operator        = "+" | "-" | "*" | "/" ;
+condition       = identifier comparator value ;
 comparator      = "==" | "!=" | "<" | ">" | "<=" | ">=" ;
 
-(* Funções e comandos específicos do avião *)
-function_call   = ( "takeOff" | "land" | "accelerate" | "decelerate"
-                  | "turnLeft" | "turnRight" | "status" )
-                  "(" [ arguments ] ")" ";" ;
+parameter       = "speed" | "altitude" | "heading" ;
 
-arguments       = expression { "," expression } ;
-
-(* Print para debug *)
-print_statement = "print" "(" expression ")" ";" ;
+value           = number | identifier | string ;
 
 (* Identificadores e valores *)
 identifier      = letter { letter | digit | "_" } ;
@@ -53,69 +45,79 @@ string          = '"' { any_character - '"' } '"' ;
 (* Tokens básicos *)
 letter          = "A".."Z" | "a".."z" ;
 digit           = "0".."9" ;
+
+(* Comentários iniciam com // até o fim da linha *)
+
 ```
 
-🛫 Recursos da PlaneLang
-Variáveis: var speed = 0;
+Recursos da PlaneLang
+Comandos principais
 
-Atribuição: speed = speed + 10;
+takeoff; → decola o avião
+
+land; → pousa o avião
+
+set param = valor; → ajusta parâmetros do voo
+
+parâmetros: speed, altitude, heading
+
+exemplo: set speed = 250;
+
+Controle de fluxo
 
 Condicional:
-
 ```
-if (speed > 200) {
-    print("Velocidade alta");
+if (altitude > 5000) {
+    print "Altitude de cruzeiro atingida";
+} else {
+    print "Subindo...";
 }
+
 ```
 
 Loop:
 
 ```
 while (altitude < 10000) {
-    accelerate(100);
+    set altitude = altitude + 500;
+    wait 5 seconds;
 }
+
 ```
 Funções da VM do avião:
 
-- takeOff();
+takeoff()	Inicia o voo
+land()	Finaliza o voo
+set speed = X;	Ajusta a velocidade
+set altitude = X;	Ajusta a altitude
+set heading = X;	Ajusta o rumo/proa
+goto WP1;	Direciona o avião para um waypoint nomeado
+wait N seconds;	Simula passagem de tempo
+print "texto";	Exibe informações no console
 
-- land();
-
-- accelerate(value);
-
-- decelerate(value);
-
-- turnLeft(degrees);
-
-- turnRight(degrees);
-
-- status(); → retorna valores de sensores (velocidade, altitude etc.)
-
-Print para debug:
-
-- print("Altitude atual: " + altitude);
-
-🧪 Exemplo de programa em PlaneLang
+Exemplo de programa completo PlaneLang
 
 ```
-var speed = 0;
-var altitude = 0;
+set speed = 0;
+set altitude = 0;
 
-takeOff();
+takeoff;
 
-while (altitude < 10000) {
-    accelerate(50);
-    altitude = altitude + 500;
-    print("Subindo: " + altitude);
+while (altitude < 5000) {
+    set altitude = altitude + 500;
+    set speed = speed + 50;
+    wait 5 seconds;
+    print "Subindo... Altitude: " + altitude;
 }
 
 if (speed > 300) {
-    decelerate(50);
-} else {
-    accelerate(20);
+    print "Reduzindo velocidade";
+    set speed = speed - 50;
 }
 
-turnLeft(90);
-status();
-land();
+goto WP1;
+print "Chegamos ao waypoint principal";
+
+land;
+
 ```
