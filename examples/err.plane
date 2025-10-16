@@ -1,0 +1,6 @@
+var speed = 0
+takeOff(   /* faltou ponto e vírgula na linha anterior */
+
+if (speed > 300) {
+  decelerate(50);
+} /* faltou fechar ) do if */

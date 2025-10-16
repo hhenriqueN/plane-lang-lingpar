@@ -1,0 +1,20 @@
+var speed = 0;
+var altitude = 0;
+
+takeOff();
+
+while (altitude < 10000) {
+  accelerate(50);
+  altitude = altitude + 500;
+  print("Subindo: " + altitude);
+}
+
+if (speed > 300) {
+  decelerate(50);
+} else {
+  accelerate(20);
+}
+
+turnLeft(90);
+status();
+land();

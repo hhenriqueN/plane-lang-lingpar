@@ -1,0 +1,50 @@
+// Arquivo de teste para a linguagem PlaneLang
+// Testa todos os comandos, estruturas de controle e sintaxes.
+
+// Comandos básicos
+takeoff;
+land;
+
+// Comando 'set' com diferentes parâmetros e valores
+set speed = 100;
+set altitude = 5000;
+set heading = some_heading_variable; // Usando um ID como valor
+
+// Outros comandos com parâmetros
+wait 10 seconds;
+goto waypoint_alpha;
+print "Iniciando verificação de sistemas.";
+
+// Estrutura condicional IF
+if (altitude < 1000) {
+    print "Alerta: Baixa altitude!";
+    set speed = 50;
+}
+
+// Estrutura condicional IF-ELSE
+if (speed >= 150) {
+    print "Velocidade de cruzeiro atingida.";
+} else {
+    set speed = 150;
+    print "Acelerando para velocidade de cruzeiro.";
+}
+
+// Loop WHILE
+while (heading != 180) {
+    // Comentário dentro de um loop
+    set heading = 180;
+    wait 1 seconds;
+}
+
+// Testando outros operadores e condições
+if (some_variable == 42) {
+    goto final_approach;
+}
+
+if (another_var <= 10) {
+    // Bloco vazio
+}
+
+;; // Testando ponto e vírgula extra (declaração vazia)
+
+print "Plano de voo concluído.";
