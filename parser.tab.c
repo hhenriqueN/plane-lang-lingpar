@@ -123,6 +123,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "vm.h"
 
 extern int yylex();
 extern int yylineno;
@@ -130,6 +131,7 @@ extern FILE *yyin;
 void yyerror(const char *s);
 
 int parse_errors = 0;
+VMState vm;
 
 
 /* Enabling traces.  */
@@ -152,13 +154,14 @@ int parse_errors = 0;
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 14 "parser.y"
+#line 16 "parser.y"
 {
     int num;
     char *str;
+    void *cond;
 }
 /* Line 193 of yacc.c.  */
-#line 162 "parser.tab.c"
+#line 165 "parser.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -171,7 +174,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 175 "parser.tab.c"
+#line 178 "parser.tab.c"
 
 #ifdef short
 # undef short
@@ -467,10 +470,10 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    42,    42,    44,    48,    49,    50,    51,    52,    53,
-      54,    55,    56,    61,    65,    69,    73,    77,    81,    86,
-      89,    91,    96,   102,   106,   107,   111,   112,   113,   114,
-     115,   116,   120,   121,   122,   126,   127,   128
+       0,    37,    37,    39,    43,    44,    45,    46,    47,    48,
+      49,    50,    51,    55,    59,    63,    71,    79,    83,    87,
+      90,    92,    96,   104,   114,   115,   119,   120,   121,   122,
+     123,   124,   128,   129,   130,   134,   135,   136
 };
 #endif
 
@@ -1416,9 +1419,137 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-      
+        case 13:
+#line 55 "parser.y"
+    { vm_execute_takeoff(&vm); ;}
+    break;
+
+  case 14:
+#line 59 "parser.y"
+    { vm_execute_land(&vm); ;}
+    break;
+
+  case 15:
+#line 63 "parser.y"
+    {
+        if (strcmp((yyvsp[(2) - (5)].str), "speed") == 0) vm_execute_set_speed(&vm,(yyvsp[(4) - (5)].num));
+        else if (strcmp((yyvsp[(2) - (5)].str), "altitude") == 0) vm_execute_set_altitude(&vm,(yyvsp[(4) - (5)].num));
+        else if (strcmp((yyvsp[(2) - (5)].str), "heading") == 0) vm_execute_set_heading(&vm,(yyvsp[(4) - (5)].num));
+      ;}
+    break;
+
+  case 16:
+#line 71 "parser.y"
+    {
+        int x=0,y=0;
+        sscanf((yyvsp[(2) - (3)].str),"%d,%d",&x,&y);
+        vm_execute_goto(&vm,x,y);
+      ;}
+    break;
+
+  case 17:
+#line 79 "parser.y"
+    { printf("Waiting %d seconds\n",(yyvsp[(2) - (4)].num)); ;}
+    break;
+
+  case 18:
+#line 83 "parser.y"
+    { printf("%s\n",(yyvsp[(2) - (3)].str)); vm_execute_print(&vm); ;}
+    break;
+
+  case 22:
+#line 96 "parser.y"
+    {
+        while(vm_compare(&vm, ((Cond*)(yyvsp[(3) - (7)].cond))->param, ((Cond*)(yyvsp[(3) - (7)].cond))->op, ((Cond*)(yyvsp[(3) - (7)].cond))->value)) {
+            yyparse();
+        }
+      ;}
+    break;
+
+  case 23:
+#line 104 "parser.y"
+    {
+        Cond *c = malloc(sizeof(*c));
+        c->param = (yyvsp[(1) - (3)].str);
+        c->op = (yyvsp[(2) - (3)].str);
+        c->value = (yyvsp[(3) - (3)].num);
+        (yyval.cond) = (void*)c;
+      ;}
+    break;
+
+  case 24:
+#line 114 "parser.y"
+    { (yyval.str) = (yyvsp[(1) - (1)].str); ;}
+    break;
+
+  case 25:
+#line 115 "parser.y"
+    { (yyval.str) = (yyvsp[(1) - (1)].str); ;}
+    break;
+
+  case 26:
+#line 119 "parser.y"
+    { (yyval.str)="=="; ;}
+    break;
+
+  case 27:
+#line 120 "parser.y"
+    { (yyval.str)="!="; ;}
+    break;
+
+  case 28:
+#line 121 "parser.y"
+    { (yyval.str)="<"; ;}
+    break;
+
+  case 29:
+#line 122 "parser.y"
+    { (yyval.str)=">"; ;}
+    break;
+
+  case 30:
+#line 123 "parser.y"
+    { (yyval.str)="<="; ;}
+    break;
+
+  case 31:
+#line 124 "parser.y"
+    { (yyval.str)=">="; ;}
+    break;
+
+  case 32:
+#line 128 "parser.y"
+    { (yyval.str) = strdup("speed"); ;}
+    break;
+
+  case 33:
+#line 129 "parser.y"
+    { (yyval.str) = strdup("altitude"); ;}
+    break;
+
+  case 34:
+#line 130 "parser.y"
+    { (yyval.str) = strdup("heading"); ;}
+    break;
+
+  case 35:
+#line 134 "parser.y"
+    { (yyval.num)=(yyvsp[(1) - (1)].num); ;}
+    break;
+
+  case 36:
+#line 135 "parser.y"
+    { (yyval.num)=0; ;}
+    break;
+
+  case 37:
+#line 136 "parser.y"
+    { (yyval.num)=0; ;}
+    break;
+
+
 /* Line 1267 of yacc.c.  */
-#line 1422 "parser.tab.c"
+#line 1553 "parser.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1632,33 +1763,29 @@ yyreturn:
 }
 
 
-#line 131 "parser.y"
+#line 139 "parser.y"
 
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Erro sintático na linha %d: %s\n", yylineno, s);
-    parse_errors = 1;
+    fprintf(stderr,"Erro sintático linha %d: %s\n",yylineno,s);
+    parse_errors=1;
 }
 
-int main(int argc, char **argv) {
-    if (argc > 1) {
-        FILE *f = fopen(argv[1], "r");
-        if (!f) { perror("fopen"); return 1; }
-        yyin = f;
+int main(int argc,char **argv){
+    if(argc>1){
+        FILE *f=fopen(argv[1],"r");
+        if(!f){perror("fopen");return 1;}
+        yyin=f;
     }
-    
-    // Configura o yyin para stdin se nenhum arquivo for fornecido
-    if (yyin == NULL) {
-        yyin = stdin;
-    }
-
-    parse_errors = 0;
+    if(yyin==NULL) yyin=stdin;
+    vm_init(&vm);
+    parse_errors=0;
     yyparse();
-    if (parse_errors == 0) {
-        printf("\nPrograma valido (analise lexica + sintatica OK).\n");
+    if(parse_errors==0){
+        printf("\nPrograma válido (análise + execução OK).\n");
         return 0;
     } else {
-        printf("\nPrograma invalido (erros sintaticos encontrados).\n");
+        printf("\nPrograma inválido.\n");
         return 2;
     }
 }

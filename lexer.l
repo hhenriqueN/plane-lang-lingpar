@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "vm.h"
 #include "parser.tab.h"
 
 // Função auxiliar para remover as aspas de um literal de string.

@@ -1,0 +1,17 @@
+takeoff;
+set speed = 50;
+set heading = 90;
+goto 10,20;
+print "Status atual";
+if (speed > 40) {
+    print "Velocidade maior que 40";
+    set altitude = 200;
+    print "Altura alterada";
+} else {
+    print "Velocidade menor que 40";
+}
+while (altitude < 300) {
+    set altitude = 300;
+}
+print "Final state";
+land;
